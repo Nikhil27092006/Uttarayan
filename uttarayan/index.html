@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTTARAYAN | Pure Vegetarian Royal Experience</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Italiana&family=Tenor+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-dark: #050505;
+            --bg-soft: #141414;
+            --text: #f5f5f5;
+            --text-muted: #888888;
+            --gold: #c9a962;
+            --gold-bright: #e8d5a0;
+            --gold-dark: #7a6540;
+            --burgundy: #1a0808;
+            --accent: #c9a962;
+            --warm-orange: #d4652f;
+            --spice-red: #8b2500;
+            --curry-yellow: #daa520;
+            --saffron: #f4c430;
+            --clay: #b8860b;
+            --smoke: #2d2d2d;
+
+            --font-display: 'Italiana', serif;
+            --font-body: 'Tenor Sans', sans-serif;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-condensed: 'Bebas Neue', sans-serif;
+
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: var(--font-body);
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(139, 37, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(218, 165, 32, 0.03) 0%, transparent 50%),
+                var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::selection { background: var(--gold); color: var(--bg-dark); }
+
+        /* ================== INTRO SCREEN ================== */
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .intro-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s var(--ease-out-expo);
+        }
+
+        .intro-content { position: relative; text-align: center; }
+
+        .intro-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 169, 98, 0.5) 0%, transparent 70%);
+            opacity: 0;
+            animation: introGlow 2.5s ease-in-out infinite;
+        }
+
+        @keyframes introGlow {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .intro-logo {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 8vw, 6rem);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: var(--text);
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .intro-logo .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(70px) scale(0.6) rotateX(-90deg);
+            filter: blur(10px);
+        }
+
+        .intro-logo.animate .letter {
+            animation: letterReveal 0.5s var(--ease-out-expo) forwards;
+        }
+
+        @keyframes letterReveal {
+            to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); filter: blur(0); }
+        }
+
+        .intro-divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 2rem auto;
+            transform: scaleX(0);
+        }
+
+        .intro-divider.animate { animation: dividerGrow 0.5s var(--ease-out-expo) 0.35s forwards; }
+        @keyframes dividerGrow { to { transform: scaleX(1); } }
+
+        .intro-subtitle {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .intro-subtitle.animate { animation: fadeUpIn 0.5s var(--ease-out-expo) 0.6s forwards; }
+        @keyframes fadeUpIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* ================== CANVAS ================== */
+        .bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        /* ================== FLOATING DECORATIONS ================== */
+        .floating-element {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .deco-spice {
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .deco-line {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .deco-circle {
+            width: 80px;
+            height: 80px;
+            border: 1px solid var(--gold-dark);
+            border-radius: 50%;
+        }
+
+        /* ================== LEFT NAV ================== */
+        .side-nav {
+            position: fixed;
+            left: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: opacity 0.4s;
+        }
+
+        .side-nav-item:hover, .side-nav-item.active { opacity: 1; }
+
+        .side-nav-number {
+            font-family: var(--font-condensed);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+        }
+
+        .side-nav-line {
+            width: 30px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .side-nav-item.active .side-nav-line { opacity: 1; }
+
+        .side-nav-label {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text);
+            display: none;
+        }
+
+        .side-nav-item.active .side-nav-label { display: block; }
+
+        /* ================== TOP NAV ================== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+            opacity: 0;
+        }
+
+        .top-nav.visible { opacity: 1; transition: opacity 0.8s; }
+
+        .top-nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 0.4em;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .top-nav-cta-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .top-nav-cta {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--bg-dark);
+            background: var(--gold);
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            transition: all 0.4s var(--ease-out-expo);
+            display: inline-block;
+        }
+
+        .top-nav-cta:hover { background: var(--gold-bright); transform: translateY(-2px); }
+
+        /* ── Phone Popup ── */
+        .phone-popup {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: linear-gradient(135deg, rgba(20,20,20,0.97), rgba(10,10,10,0.99));
+            border: 1px solid rgba(201,169,98,0.45);
+            border-radius: 4px;
+            padding: 0.7rem 1.4rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(201,169,98,0.12);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.95);
+            transform-origin: top right;
+            transition:
+                opacity 0.35s cubic-bezier(0.19,1,0.22,1),
+                transform 0.35s cubic-bezier(0.19,1,0.22,1);
+            z-index: 200;
+        }
+
+        .phone-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .phone-popup-icon {
+            font-size: 1rem;
+            animation: ringPulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { transform: rotate(0deg); }
+            20%       { transform: rotate(-15deg); }
+            40%       { transform: rotate(15deg); }
+            60%       { transform: rotate(-8deg); }
+            80%       { transform: rotate(8deg); }
+        }
+
+        .phone-popup-label {
+            font-family: var(--font-body);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold-dark);
+        }
+
+        .phone-popup-number {
+            font-family: var(--font-condensed);
+            font-size: 1.15rem;
+            letter-spacing: 0.08em;
+            color: var(--gold);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .phone-popup-number:hover { color: var(--gold-bright); }
+
+        .phone-popup::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 22px;
+            width: 10px;
+            height: 10px;
+            background: rgba(20,20,20,0.97);
+            border-left: 1px solid rgba(201,169,98,0.45);
+            border-top: 1px solid rgba(201,169,98,0.45);
+            transform: rotate(45deg);
+        }
+
+        /* ================== SECTIONS ================== */
+        section {
+            min-height: 100vh;
+            position: relative;
+            padding: 8rem 6rem 8rem 10rem;
+        }
+
+        /* ================== HERO ================== */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .hero-visual {
+            position: absolute;
+            right: 8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;
+            height: 350px;
+            opacity: 0;
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            border-radius: 50%;
+            animation: ringRotate 20s linear infinite;
+        }
+
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: -40px;
+            border: 1px dashed rgba(201, 169, 98, 0.1);
+            border-radius: 50%;
+            animation: ringRotate 30s linear infinite reverse;
+        }
+
+        @keyframes ringRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 1px solid var(--gold-dark);
+            box-shadow: 0 0 80px rgba(201, 169, 98, 0.2);
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border: 1px solid var(--gold-dark);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: -40px;
+            border: 1px solid var(--gold-dark);
+            border-radius: 50%;
+            opacity: 0.15;
+        }
+
+        .hero-label {
+            font-family: var(--font-condensed);
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            line-height: 0.95;
+            color: var(--text);
+            margin-bottom: 2rem;
+        }
+
+        .hero-title .word { display: inline-block; transform: translateY(110%); opacity: 0; }
+
+        .hero-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 500px;
+            opacity: 0;
+        }
+
+        .hero-cta {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--bg-dark);
+            background: var(--gold);
+            padding: 1.2rem 3rem;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s var(--ease-out-expo);
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .hero-cta:hover::before { left: 100%; }
+        .hero-cta:hover { background: var(--gold-bright); }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .hero-cta-secondary {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text);
+            background: transparent;
+            border: 1px solid rgba(201, 169, 98, 0.4);
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.5s var(--ease-out-expo);
+            opacity: 0;
+        }
+
+        .hero-cta-secondary:hover {
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        /* Food Decorations */
+        .hero-food-decor {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            filter: blur(2px);
+        }
+
+        .hero-spice-1 { top: 20%; left: 5%; }
+        .hero-spice-2 { top: 30%; right: 5%; }
+        .hero-spice-3 { bottom: 25%; left: 8%; }
+        .hero-spice-4 { bottom: 35%; right: 8%; }
+        .hero-spice-5 { top: 50%; left: 3%; }
+
+        /* ================== OVERVIEW ================== */
+        .overview {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(212, 101, 47, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(218, 165, 32, 0.06) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-soft) 50%, var(--bg-dark) 100%);
+        }
+
+        .overview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 101, 47, 0.3), transparent);
+        }
+
+        .overview-header { margin-bottom: 4rem; }
+
+        .overview-number {
+            font-family: var(--font-condensed);
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            color: var(--gold-dark);
+            margin-bottom: 1rem;
+        }
+
+        .overview-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            color: var(--text);
+        }
+
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+            max-width: 1100px;
+        }
+
+        .story-column {
+            position: relative;
+        }
+
+        .story-para {
+            font-family: var(--font-serif);
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--text-muted);
+            margin-bottom: 1.8rem;
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        .story-para .highlight {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .story-quote {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 5rem;
+            padding: 3rem;
+            border-top: 1px solid rgba(201, 169, 98, 0.15);
+            border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+        }
+
+        .quote-mark {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.3;
+            line-height: 0.8;
+        }
+
+        .quote-text {
+            font-family: var(--font-serif);
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-style: italic;
+            color: var(--text);
+            line-height: 1.7;
+            margin: 1rem 0;
+        }
+
+        .quote-author {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-top: 1rem;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .spec-card {
+            padding: 2rem;
+            border-left: 1px solid rgba(201, 169, 98, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.4s var(--ease-out-expo);
+            position: relative;
+        }
+
+        .spec-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(212, 101, 47, 0.05), transparent 70%);
+            pointer-events: none;
+        }
+
+        .spec-card:hover {
+            border-left-color: var(--warm-orange);
+            transform: translateY(-5px);
+        }
+
+        .spec-value {
+            font-family: var(--font-condensed);
+            font-size: 3.5rem;
+            letter-spacing: 0.02em;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-label {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ================== STORY IMAGE ================== */
+        .story-image-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto 5rem;
+            overflow: hidden;
+            /* start clipped — GSAP will open it */
+            clip-path: inset(0 100% 0 0);
+        }
+
+        .story-image-wrap img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            object-position: center 30%;
+            display: block;
+            border: 1px solid rgba(201,169,98,0.25);
+            filter: brightness(0.88) saturate(1.1);
+            transform: scale(1.08);
+            transition: filter 0.6s;
+        }
+
+        .story-image-wrap:hover img {
+            filter: brightness(0.95) saturate(1.2);
+        }
+
+        /* gold shimmer scan line */
+        .story-image-shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg,
+                transparent 0%,
+                transparent 40%,
+                rgba(201,169,98,0.18) 50%,
+                transparent 60%,
+                transparent 100%);
+            background-size: 200% 100%;
+            background-position: 200% 0;
+            pointer-events: none;
+        }
+
+        /* bottom caption bar */
+        .story-image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 1.8rem;
+            background: linear-gradient(to top, rgba(5,5,5,0.85), transparent);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            opacity: 0;
+        }
+
+        .story-image-caption-line {
+            width: 30px;
+            height: 1px;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .story-image-caption-text {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        /* top-right corner accent */
+        .story-image-corner {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-top: 1px solid var(--gold);
+            border-right: 1px solid var(--gold);
+            opacity: 0;
+        }
+        .story-image-corner-bl {
+            top: auto;
+            bottom: 12px;
+            right: auto;
+            left: 12px;
+            border-top: none;
+            border-right: none;
+            border-bottom: 1px solid var(--gold);
+            border-left: 1px solid var(--gold);
+        }
+
+        /* ================== MENU ================== */
+        .menu {
+            background:
+                radial-gradient(ellipse at 10% 80%, rgba(139, 37, 0, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 20%, rgba(218, 165, 32, 0.08) 0%, transparent 40%),
+                linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-soft) 50%, var(--bg-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .menu-header { margin-bottom: 4rem; text-align: center; }
+
+        .menu-header::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 2rem auto 0;
+        }
+
+        .menu-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            color: var(--text);
+        }
+
+        /* Menu Tabs */
+        .menu-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .menu-tab {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: transparent;
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.4s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold);
+            transform: translateY(100%);
+            transition: transform 0.4s var(--ease-out-expo);
+            z-index: -1;
+        }
+
+        .menu-tab:hover {
+            color: var(--text);
+            border-color: var(--gold);
+        }
+
+        .menu-tab.active {
+            color: var(--bg-dark);
+            border-color: var(--gold);
+            background: var(--gold);
+        }
+
+        /* Menu Tab Content */
+        .menu-tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s var(--ease-out-expo);
+        }
+
+        .menu-tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .menu-grid-4col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* Menu Card */
+        .menu-card {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.8), rgba(10, 10, 10, 0.9));
+            border: 1px solid rgba(201, 169, 98, 0.1);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .menu-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center top, rgba(212, 101, 47, 0.08), transparent 70%);
+            pointer-events: none;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-dark));
+            transform: scaleX(0);
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201, 169, 98, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(201, 169, 98, 0.1);
+        }
+
+        .menu-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .menu-card.large {
+            grid-column: span 1;
+            padding: 2.5rem;
+        }
+
+        .menu-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .menu-card:hover .menu-card-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .menu-card-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--text);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .menu-card:hover .menu-card-name {
+            color: var(--gold);
+        }
+
+        .menu-card-desc {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card-price {
+            font-family: var(--font-condensed);
+            font-size: 1.2rem;
+            color: var(--gold);
+            letter-spacing: 0.05em;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(201, 169, 98, 0.15);
+        }
+
+        /* Menu CTA */
+        .menu-cta-wrapper {
+            text-align: center;
+            margin-top: 5rem;
+            position: relative;
+        }
+
+        .menu-cta-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 80px;
+            background: radial-gradient(ellipse, rgba(201, 169, 98, 0.3), transparent 70%);
+            pointer-events: none;
+        }
+
+        .menu-cta-btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            background: transparent;
+            border: 1px solid var(--gold);
+            padding: 1.2rem 3.5rem;
+            cursor: pointer;
+            transition: all 0.5s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold);
+            transform: translateX(-100%);
+            transition: transform 0.5s var(--ease-out-expo);
+            z-index: -1;
+        }
+
+        .menu-cta-btn:hover {
+            color: var(--bg-dark);
+        }
+
+        .menu-cta-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        /* ================== RESERVE ================== */
+        .reserve {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background:
+                radial-gradient(ellipse at 30% 70%, rgba(212, 101, 47, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 30%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-dark) 0%, #0d0d0d 50%, var(--bg-dark) 100%);
+            overflow: hidden;
+            padding: 8rem 2rem;
+        }
+
+        .reserve::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .reserve-decoration {
+            position: absolute;
+            border: 1px solid rgba(201, 169, 98, 0.1);
+            pointer-events: none;
+        }
+
+        .reserve-deco-1 {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation: rotateSlow 30s linear infinite;
+        }
+
+        .reserve-deco-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            right: -50px;
+            transform: rotate(45deg);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .reserve-deco-3 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            top: 50%;
+            right: 10%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes rotateSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; transform: rotate(45deg) scale(1); }
+            50% { opacity: 0.2; transform: rotate(45deg) scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .reserve-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .reserve-label {
+            font-family: var(--font-condensed);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: var(--gold);
+            display: block;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+        }
+
+        .reserve-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+            opacity: 0;
+        }
+
+        .reserve-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+            opacity: 0;
+        }
+
+        /* Reserve Form */
+        .reserve-form-wrapper {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.8));
+            border: 1px solid rgba(201, 169, 98, 0.15);
+            padding: 3rem;
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .reserve-form { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .reserve-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .reserve-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .reserve-form-group.full-width { grid-column: 1 / -1; }
+
+        .reserve-label-input {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .reserve-input, .reserve-textarea {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            padding: 1rem 1.2rem;
+            transition: all 0.4s var(--ease-out-expo);
+            color-scheme: dark;
+        }
+
+        .reserve-input option {
+            background-color: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .reserve-input:focus, .reserve-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .reserve-input::placeholder, .reserve-textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .reserve-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .reserve-submit {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--bg-dark);
+            background: var(--gold);
+            border: none;
+            padding: 1.3rem 3rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            transition: all 0.5s var(--ease-out-expo);
+            align-self: center;
+            margin-top: 1rem;
+        }
+
+        .reserve-submit:hover {
+            background: var(--gold-bright);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(201, 169, 98, 0.3);
+        }
+
+        .reserve-submit-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .reserve-submit:hover .reserve-submit-icon {
+            transform: translateX(5px);
+        }
+
+        /* Reservation Success Popup */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s var(--ease-out-expo);
+        }
+
+        .success-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(145deg, rgba(20,20,20,0.95), rgba(10,10,10,0.98));
+            border: 1px solid rgba(201,169,98,0.3);
+            border-radius: 4px;
+            padding: 3rem 4rem;
+            z-index: 9999;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(201,169,98,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s var(--ease-out-expo);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .success-popup.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .success-popup-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        @keyframes popIn {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-popup-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--text);
+            letter-spacing: 0.05em;
+        }
+
+        .success-popup-message {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 300px;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .success-popup-btn {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--bg-dark);
+            background: var(--gold);
+            border: none;
+            padding: 1.2rem 3rem;
+            cursor: pointer;
+            transition: all 0.4s var(--ease-out-expo);
+        }
+
+        .success-popup-btn:hover {
+            background: var(--gold-bright);
+            transform: translateY(-2px);
+        }
+
+        /* Reserve Info */
+        .reserve-info {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            opacity: 0;
+        }
+
+        .reserve-info-item {
+            text-align: center;
+        }
+
+        .reserve-info-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .reserve-info-label {
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .reserve-info-value {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        /* ================== FOOTER ================== */
+        .footer {
+            padding: 4rem 6rem;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(139, 37, 0, 0.15) 0%, transparent 50%),
+                var(--bg-dark);
+            border-top: 1px solid rgba(201, 169, 98, 0.1);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            letter-spacing: 0.4em;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .footer-heading {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--gold); }
+
+        .footer-copyright {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(201, 169, 98, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-link {
+            font-size: 1rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-link:hover { opacity: 1; color: var(--gold); }
+
+        .footer-thank-you { display: none; } /* replaced by site-thank-you below */
+
+        /* ================== THANK YOU BANNER ================== */
+        .site-thank-you {
+            width: 100%;
+            text-align: center;
+            padding: 3rem 1rem 4rem;
+            background: var(--bg-dark);
+            position: relative;
+        }
+
+        .site-thank-you-line {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 2rem;
+        }
+
+        .site-thank-you-text {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            color: var(--gold);
+            letter-spacing: 0.08em;
+            margin: 0;
+            line-height: 1;
+        }
+
+        /* Admin Panel Button */
+        .admin-panel-btn {
+            display: block;
+            width: 100%;
+            padding: 1.5rem;
+            background: transparent;
+            border: none;
+            border-top: 1px solid rgba(201, 169, 98, 0.1);
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-panel-btn:hover {
+            background: rgba(201, 169, 98, 0.05);
+            color: var(--gold);
+        }
+
+        .admin-panel-btn span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        @media (max-width: 1200px) {
+            .hero-visual { display: none; }
+            .hero-food-decor { display: none; }
+        }
+
+        @media (max-width: 1024px) {
+            .side-nav { display: none; }
+            section { padding: 6rem 2rem; }
+            .story-content { grid-template-columns: 1fr; gap: 2rem; }
+            .story-quote { padding: 2rem 1rem; }
+            .overview-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+            .dish-left { gap: 1rem; }
+            .dish-thumb { width: 45px; height: 45px; font-size: 1.2rem; }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav { padding: 1.5rem 2rem; }
+            .hero-title { font-size: 3.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .menu-tabs { gap: 0.3rem; }
+            .menu-tab { padding: 0.8rem 1.2rem; font-size: 0.65rem; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .menu-grid-4col { grid-template-columns: 1fr 1fr; }
+            .menu-card { padding: 1.5rem; }
+            .menu-card.large { padding: 1.5rem; }
+            .menu-card-icon { font-size: 2rem; }
+            .menu-card-name { font-size: 1rem; }
+            .menu-cta-wrapper { margin-top: 3rem; }
+        }
+
+        @media (max-width: 480px) {
+            .menu-grid { grid-template-columns: 1fr; }
+            .menu-grid-4col { grid-template-columns: 1fr; }
+            .reserve-form-row { grid-template-columns: 1fr; }
+            .reserve-form-wrapper { padding: 2rem 1.5rem; }
+            .reserve-info { flex-direction: column; gap: 2rem; }
+            .reserve-deco-1, .reserve-deco-2, .reserve-deco-3 { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Intro Screen -->
+    <div class="intro-screen" id="intro-screen">
+        <div class="intro-content">
+            <div class="intro-glow"></div>
+            <h1 class="intro-logo" id="intro-logo"></h1>
+            <div class="intro-divider"></div>
+            <p class="intro-subtitle">Pure Vegetarian Royal Experience</p>
+        </div>
+    </div>
+
+    <!-- Background Canvas -->
+    <canvas class="bg-canvas" id="bg-canvas"></canvas>
+
+    <!-- Floating Decorations -->
+    <div class="floating-element deco-spice" style="top: 15%; left: 3%;">🌶️</div>
+    <div class="floating-element deco-line" style="top: 35%; right: 5%;"></div>
+    <div class="floating-element deco-circle" style="bottom: 25%; left: 4%;"></div>
+    <div class="floating-element deco-spice" style="bottom: 15%; right: 10%;">🫓</div>
+    <div class="floating-element deco-circle" style="top: 55%; left: 2%;"></div>
+    <div class="floating-element deco-spice" style="top: 25%; right: 12%;">🫑</div>
+    <div class="floating-element deco-line" style="bottom: 40%; right: 3%;"></div>
+
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <div class="side-nav-item active" data-section="0">
+            <span class="side-nav-number">01</span>
+            <div class="side-nav-line"></div>
+            <span class="side-nav-label">Start</span>
+        </div>
+        <div class="side-nav-item" data-section="1">
+            <span class="side-nav-number">02</span>
+            <div class="side-nav-line"></div>
+            <span class="side-nav-label">Story</span>
+        </div>
+        <div class="side-nav-item" data-section="2">
+            <span class="side-nav-number">03</span>
+            <div class="side-nav-line"></div>
+            <span class="side-nav-label">Menu</span>
+        </div>
+        <div class="side-nav-item" data-section="3">
+            <span class="side-nav-number">04</span>
+            <div class="side-nav-line"></div>
+            <span class="side-nav-label">Reserve</span>
+        </div>
+    </nav>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav" id="top-nav">
+        <a href="#" class="top-nav-logo">UTTARAYAN</a>
+        <div class="top-nav-cta-wrap">
+            <a href="#" class="top-nav-cta" id="inquire-btn">Inquire Now</a>
+            <div class="phone-popup" id="phone-popup">
+                <span class="phone-popup-icon">📞</span>
+                <div>
+                    <div class="phone-popup-label">Call Us</div>
+                    <a href="tel:+919922729558" class="phone-popup-number">+91 99227 29558</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="section-0">
+        <div class="hero-food-decor hero-spice-1">🌶️</div>
+        <div class="hero-food-decor hero-spice-2">🍛</div>
+        <div class="hero-food-decor hero-spice-3">🫓</div>
+        <div class="hero-food-decor hero-spice-4">🥘</div>
+        <div class="hero-food-decor hero-spice-5">🍚</div>
+
+        <div class="hero-visual">
+            <!-- Rich food illustration -->
+            <svg viewBox="0 0 200 200" style="width:100%;height:100%;">
+                <defs>
+                    <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1a0808"/>
+                        <stop offset="100%" style="stop-color:#0a0505"/>
+                    </linearGradient>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#c9a962"/>
+                        <stop offset="100%" style="stop-color:#7a6540"/>
+                    </linearGradient>
+                    <linearGradient id="curryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#d4652f"/>
+                        <stop offset="100%" style="stop-color:#8b2500"/>
+                    </linearGradient>
+                </defs>
+                <!-- Outer golden ring -->
+                <circle cx="100" cy="100" r="95" fill="none" stroke="#c9a962" stroke-width="0.5" opacity="0.3"/>
+                <!-- Plate -->
+                <circle cx="100" cy="100" r="85" fill="url(#plateGrad)" stroke="#c9a962" stroke-width="1"/>
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#c9a962" stroke-width="0.3" opacity="0.4"/>
+                <!-- Curry dish -->
+                <ellipse cx="100" cy="95" rx="40" ry="22" fill="url(#curryGrad)" stroke="#c9a962" stroke-width="0.5"/>
+                <!-- Rice/Pulao -->
+                <ellipse cx="100" cy="105" rx="30" ry="15" fill="#daa520" opacity="0.8"/>
+                <!-- Garnish leaves -->
+                <path d="M85 90 Q88 85 91 90" fill="none" stroke="#228b22" stroke-width="1.5"/>
+                <path d="M110 100 Q113 95 116 100" fill="none" stroke="#228b22" stroke-width="1.5"/>
+                <!-- Spice dots -->
+                <circle cx="90" cy="95" r="2" fill="#c9a962"/>
+                <circle cx="105" cy="88" r="1.5" fill="#f4c430"/>
+                <circle cx="115" cy="102" r="2" fill="#c9a962"/>
+                <circle cx="95" cy="108" r="1.5" fill="#228b22"/>
+                <!-- Steam -->
+                <path d="M95 75 Q97 70 95 65" fill="none" stroke="#888" stroke-width="0.5" opacity="0.4"/>
+                <path d="M105 72 Q107 67 105 62" fill="none" stroke="#888" stroke-width="0.5" opacity="0.3"/>
+            </svg>
+        </div>
+
+        <span class="hero-label">EST. 2024 • PURE VEGETARIAN</span>
+        <h1 class="hero-title" id="hero-title"></h1>
+        <p class="hero-subtitle">A royal culinary journey through India's finest vegetarian cuisine. Where tradition meets perfection.</p>
+        <div class="hero-cta-group">
+            <button class="hero-cta">Explore Menu</button>
+            <button class="hero-cta-secondary">View Gallery</button>
+        </div>
+    </section>
+
+    <!-- Story/Specs -->
+    <section class="overview" id="section-1">
+        <div class="overview-header">
+            <span class="overview-number">02 THE STORY</span>
+            <h2 class="overview-title">A Legacy of Excellence</h2>
+        </div>
+
+        <div class="story-content">
+            <div class="story-column story-left">
+                <p class="story-para story-para-1">Born from a passion for preserving India's vegetarian culinary heritage, <span class="highlight">UTTARAYAN</span> brings together flavors from every corner of the subcontinent.</p>
+                <p class="story-para story-para-2">Our name derives from the sacred festival of Uttarayan, celebrating the sun's northward journey — a symbol of enlightenment and abundance.</p>
+            </div>
+            <div class="story-column story-right">
+                <p class="story-para story-para-3">Each dish tells a story, crafted with spices sourced directly from the farms of Rajasthan, the coconut groves of Kerala, and the wheat fields of Punjab.</p>
+                <p class="story-para story-para-4">For over two decades, we have welcomed guests into our warm embrace, offering not just a meal, but an unforgettable journey through India's vegetarian legacy.</p>
+            </div>
+        </div>
+
+        <!-- Restaurant Interior Image -->
+        <div class="story-image-wrap" id="story-img-wrap">
+            <img src="restaurant.jpeg" alt="Uttarayan Restaurant Interior" id="story-img">
+            <div class="story-image-shimmer" id="story-shimmer"></div>
+            <div class="story-image-corner" id="story-corner-tr"></div>
+            <div class="story-image-corner story-image-corner-bl" id="story-corner-bl"></div>
+            <div class="story-image-caption" id="story-caption">
+                <div class="story-image-caption-line"></div>
+                <span class="story-image-caption-text">Our Space — Uttarayan, Nagpur</span>
+            </div>
+        </div>
+
+        <div class="story-quote">
+            <div class="quote-mark">"</div>
+            <p class="quote-text">Where every bite is a prayer, every spice a story, and every moment a celebration.</p>
+            <p class="quote-author">— The UTTARAYAN Family</p>
+        </div>
+
+        <div class="overview-grid">
+            <div class="spec-card">
+                <div class="spec-value">50+</div>
+                <div class="spec-label">Signature Dishes</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-value">4</div>
+                <div class="spec-label">Cuisine Regions</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-value">100%</div>
+                <div class="spec-label">Vegetarian</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu -->
+    <section class="menu" id="section-2">
+        <div class="menu-header">
+            <span class="overview-number">03 THE MENU</span>
+            <h2 class="menu-title">Culinary Mastery</h2>
+        </div>
+
+        <!-- Menu Tabs Navigation -->
+        <div class="menu-tabs">
+            <button class="menu-tab active" data-tab="starters">Starters</button>
+            <button class="menu-tab" data-tab="main-course">Main Course</button>
+            <button class="menu-tab" data-tab="breads">Breads</button>
+            <button class="menu-tab" data-tab="rice-noodles">Rice & Noodles</button>
+            <button class="menu-tab" data-tab="beverages">Beverages</button>
+        </div>
+
+        <!-- Starters Tab -->
+        <div class="menu-tab-content active" id="starters">
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <div class="menu-card-name">Paneer 65</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Gobi 65</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Veg Manchurian</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Mushroom 65</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Crispy Baby Corn</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Crispy Veg</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Chilli Potato</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Golden Fried Paneer</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Spring Roll</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Course Tab -->
+        <div class="menu-tab-content" id="main-course">
+            <div class="menu-grid menu-grid-4col">
+                <div class="menu-card large">
+                    <div class="menu-card-name">Dal Fry</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Dal Tadka</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Dal Makhani</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Mix Veg</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Shahi Paneer</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Paneer Tikka Masala</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Kadhai Paneer</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Palak Paneer</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Paneer Butter Masala</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Aloo Gobi Masala</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Matar Mushroom</div>
+                </div>
+                <div class="menu-card large">
+                    <div class="menu-card-name">Rajasthani Gatte ki Sabzi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breads Tab -->
+        <div class="menu-tab-content" id="breads">
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <div class="menu-card-name">Tawa Roti</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Butter Roti</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Tandoori Roti</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Butter Naan</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Garlic Naan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rice & Noodles Tab -->
+        <div class="menu-tab-content" id="rice-noodles">
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <div class="menu-card-name">Veg Fried Rice</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Peas Pulao</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Schezwan Fried Rice</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Coconut Rice</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Veg Noodles</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Schezwan Noodles</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Paneer Fried Rice</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beverages Tab -->
+        <div class="menu-tab-content" id="beverages">
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <div class="menu-card-name">Filter Coffee</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Masala Chai</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Green Tea</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Jal Jeera</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Shikanji</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Chaas</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Fresh Lime Water</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Coconut Water</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Hot Chocolate</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Espresso</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Assam Tea</div>
+                </div>
+                <div class="menu-card">
+                    <div class="menu-card-name">Kesar Chai</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-cta-wrapper">
+            <div class="menu-cta-glow"></div>
+            <button class="menu-cta-btn">View Full Menu</button>
+        </div>
+    </section>
+
+    <!-- Reserve Section -->
+    <section class="reserve" id="section-3">
+        <div class="reserve-decoration reserve-deco-1"></div>
+        <div class="reserve-decoration reserve-deco-2"></div>
+        <div class="reserve-decoration reserve-deco-3"></div>
+
+        <div class="reserve-content">
+            <span class="reserve-label">04 RESERVATION</span>
+            <h2 class="reserve-title">Reserve Your Experience</h2>
+            <p class="reserve-subtitle">Join us for an unforgettable culinary journey</p>
+
+            <div class="reserve-form-wrapper">
+                <form class="reserve-form" id="reservation-form">
+                    <div class="reserve-form-row">
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Your Name</label>
+                            <input type="text" class="reserve-input" id="guest-name" placeholder="Enter your name" required>
+                        </div>
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Phone Number</label>
+                            <input type="tel" class="reserve-input" id="guest-phone" placeholder="+91 98765 43210" required>
+                        </div>
+                    </div>
+                    <div class="reserve-form-row">
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Date</label>
+                            <input type="date" class="reserve-input" required>
+                        </div>
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Time</label>
+                            <select class="reserve-input" required>
+                                <option value="">Select time</option>
+                                <option>11:00 AM</option>
+                                <option>12:00 PM</option>
+                                <option>1:00 PM</option>
+                                <option>2:00 PM</option>
+                                <option>6:00 PM</option>
+                                <option>7:00 PM</option>
+                                <option>8:00 PM</option>
+                                <option>9:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="reserve-form-row">
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Number of Guests</label>
+                            <select class="reserve-input" required>
+                                <option value="">Select guests</option>
+                                <option>1 Person</option>
+                                <option>2 People</option>
+                                <option>3 People</option>
+                                <option>4 People</option>
+                                <option>5 People</option>
+                                <option>6 People</option>
+                                <option>7+ People</option>
+                            </select>
+                        </div>
+                        <div class="reserve-form-group">
+                            <label class="reserve-label-input">Occasion</label>
+                            <select class="reserve-input">
+                                <option value="">Select occasion</option>
+                                <option>Birthday</option>
+                                <option>Anniversary</option>
+                                <option>Business Dinner</option>
+                                <option>Family Gathering</option>
+                                <option>Date Night</option>
+                                <option>Celebration</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="reserve-form-group full-width">
+                        <label class="reserve-label-input">Special Requests</label>
+                        <textarea class="reserve-textarea" placeholder="Any dietary requirements or special requests..."></textarea>
+                    </div>
+                    <button type="submit" class="reserve-submit">
+                        <span class="reserve-submit-text">Confirm Reservation</span>
+                        <span class="reserve-submit-icon">→</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="reserve-info">
+                <div class="reserve-info-item">
+                    <div class="reserve-info-icon">📞</div>
+                    <div class="reserve-info-label">Call Us</div>
+                    <div class="reserve-info-value">+91 99227 29558</div>
+                </div>
+                <div class="reserve-info-item">
+                    <div class="reserve-info-icon">📍</div>
+                    <div class="reserve-info-label">Location</div>
+                    <div class="reserve-info-value">Behind Orange City Hospital, Lanjewar Layout, Tatya Tope Nagar, Pratap Nagar, Nagpur, Maharashtra</div>
+                </div>
+                <div class="reserve-info-item">
+                    <div class="reserve-info-icon">🕐</div>
+                    <div class="reserve-info-label">Hours</div>
+                    <div class="reserve-info-value">11:00 AM - 11:00 PM</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Popup (Hidden by default) -->
+    <div class="success-overlay" id="success-overlay"></div>
+    <div class="success-popup" id="success-popup">
+        <span class="success-popup-icon">✨</span>
+        <h3 class="success-popup-title">Reservation Confirmed</h3>
+        <p class="success-popup-message">Thank you for choosing Uttarayan. We have received your request and will contact you shortly to confirm the details.</p>
+        <button class="success-popup-btn" id="success-close-btn">Return to home</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">UTTARAYAN</div>
+                <p class="footer-tagline">Pure Vegetarian Royal Experience. Where tradition meets refinement.</p>
+            </div>
+            <div>
+                <h4 class="footer-heading">Navigate</h4>
+                <ul class="footer-links">
+                    <li><a href="#section-0">Home</a></li>
+                    <li><a href="#section-1">Story</a></li>
+                    <li><a href="#section-2">Menu</a></li>
+                    <li><a href="#section-3">Reserve</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Contact</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Email Us</a></li>
+                    <li><a href="#">Call Now</a></li>
+                    <li><a href="#">Location</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Follow</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2024 Uttarayan. All rights reserved.</span>
+            <a href="admin.html" class="admin-link">Admin</a>
+        </div>
+    </footer>
+
+    <!-- Thank You Banner -->
+    <div class="site-thank-you">
+        <div class="site-thank-you-line"></div>
+        <p class="site-thank-you-text">Thank You for visiting</p>
+    </div>
+
+    <script>
+        // ================== LENIS ==================
+        const lenis = new Lenis({
+            duration: 1.8,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            smoothWheel: true,
+        });
+
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // ================== BACKGROUND SHADER ==================
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgScene = new THREE.Scene();
+        const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
+        bgRenderer.setSize(window.innerWidth, window.innerHeight);
+        bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const bgVertexShader = `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+
+        const bgFragmentShader = `
+            uniform float uTime;
+            uniform vec2 uResolution;
+            varying vec2 vUv;
+
+            float Hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+            float noise(vec2 p) {
+                vec2 i = floor(p);
+                vec2 f = fract(p);
+                f = f * f * (3.0 - 2.0 * f);
+                return mix(mix(Hash(i), Hash(i + vec2(1.0, 0.0)), f.x), mix(Hash(i + vec2(0.0, 1.0)), Hash(i + vec2(1.0, 1.0)), f.x), f.y);
+            }
+            float fbm(vec2 p) { float v = 0.0; v += noise(p) * 0.5; v += noise(p * 2.0) * 0.25; v += noise(p * 4.0) * 0.125; return v; }
+
+            void main() {
+                vec2 uv = vUv;
+                float aspect = uResolution.x / uResolution.y;
+                vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
+
+                float particles = 0.0;
+                for(int i = 0; i < 4; i++) {
+                    vec2 pos = vec2(sin(uTime * 0.15 + float(i) * 1.5) * 0.6 + 0.5, fract(uTime * 0.06 + float(i) * 0.25));
+                    float d = length(p - pos);
+                    particles += smoothstep(0.02, 0.0, d) * 0.2;
+                }
+
+                float fog = fbm(p * 2.5 + uTime * 0.06);
+                fog = smoothstep(0.35, 0.65, fog) * 0.04;
+
+                vec3 color = vec3(0.02, 0.02, 0.02);
+                color += vec3(0.79, 0.66, 0.38) * fog;
+                color += vec3(0.79, 0.66, 0.38) * particles;
+
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        const bgGeometry = new THREE.PlaneGeometry(2, 2);
+        const bgMaterial = new THREE.ShaderMaterial({
+            vertexShader: bgVertexShader,
+            fragmentShader: bgFragmentShader,
+            uniforms: { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) } }
+        });
+        bgScene.add(new THREE.Mesh(bgGeometry, bgMaterial));
+
+        function animateBg() {
+            bgMaterial.uniforms.uTime.value = performance.now() * 0.001;
+            bgRenderer.render(bgScene, bgCamera);
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        window.addEventListener('resize', () => {
+            bgRenderer.setSize(window.innerWidth, window.innerHeight);
+            bgMaterial.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+        });
+
+        // ================== GSAP ==================
+        gsap.registerPlugin(ScrollTrigger);
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // ================== SPLIT TEXT ==================
+        function splitText(element) {
+            if (!element) return [];
+            const text = element.textContent;
+            element.innerHTML = '';
+            return text.split(/\s+/).map(word => {
+                const span = document.createElement('span');
+                span.className = 'word';
+                span.innerHTML = word + ' ';
+                element.appendChild(span);
+                return span;
+            });
+        }
+
+        // ================== INTRO ==================
+        const introLogo = document.getElementById('intro-logo');
+        const introText = 'UTTARAYAN';
+        introLogo.innerHTML = introText.split('').map(char =>
+            `<span class="letter">${char === ' ' ? '&nbsp;' : char}</span>`
+        ).join('');
+
+        setTimeout(() => {
+            introLogo.classList.add('animate');
+            document.querySelector('.intro-divider').classList.add('animate');
+            document.querySelector('.intro-subtitle').classList.add('animate');
+        }, 100);
+
+        setTimeout(() => {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('top-nav').classList.add('visible');
+
+            const heroTitle = document.getElementById('hero-title');
+            heroTitle.innerHTML = introText.split('').map(char =>
+                `<span class="word">${char === ' ' ? '&nbsp;' : char}</span>`
+            ).join('');
+
+            const heroTl = gsap.timeline({ delay: 0.2 });
+            heroTl.to('.hero-label', { opacity: 1, duration: 0.6, ease: 'power3.out' })
+                .to('.hero-title .word', { y: 0, opacity: 1, duration: 0.6, stagger: 0.04, ease: 'power3.out' }, '-=0.3')
+                .to('.hero-subtitle', { opacity: 1, duration: 0.6, ease: 'power3.out' }, '-=0.2')
+                .to('.hero-cta', { opacity: 1, duration: 0.6, ease: 'power3.out' }, '-=0.2')
+                .to('.hero-cta-secondary', { opacity: 1, duration: 0.6, ease: 'power3.out' }, '-=0.4')
+                .to('.hero-visual', { opacity: 1, duration: 1 }, '-=0.8')
+                .to('.hero-food-decor', {
+                    opacity: 0.6,
+                    duration: 1.5,
+                    stagger: 0.2,
+                    ease: 'power2.out'
+                }, '-=1.5');
+
+        }, 1200);
+
+        // ================== SCROLL ==================
+        const sections = document.querySelectorAll('section');
+        const sideNavItems = document.querySelectorAll('.side-nav-item');
+
+        sections.forEach((section, index) => {
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top 50%',
+                end: 'bottom 50%',
+                onEnter: () => updateSideNav(index),
+                onEnterBack: () => updateSideNav(index)
+            });
+        });
+
+        function updateSideNav(index) {
+            sideNavItems.forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+        }
+
+        // Story paragraphs
+        gsap.to('.story-para-1', {
+            scrollTrigger: { trigger: '.story-content', start: 'top 70%' },
+            opacity: 1, y: 0, duration: 1, ease: 'power3.out'
+        });
+        gsap.to('.story-para-2', {
+            scrollTrigger: { trigger: '.story-content', start: 'top 60%' },
+            opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out'
+        });
+        gsap.to('.story-para-3', {
+            scrollTrigger: { trigger: '.story-content', start: 'top 50%' },
+            opacity: 1, y: 0, duration: 1, delay: 0.3, ease: 'power3.out'
+        });
+        gsap.to('.story-para-4', {
+            scrollTrigger: { trigger: '.story-content', start: 'top 40%' },
+            opacity: 1, y: 0, duration: 1, delay: 0.5, ease: 'power3.out'
+        });
+
+        // ================== STORY IMAGE REVEAL ==================
+        const storyImgWrap = document.getElementById('story-img-wrap');
+        const storyImg     = document.getElementById('story-img');
+        const storyCaptionEl = document.getElementById('story-caption');
+        const storyCornerTR  = document.getElementById('story-corner-tr');
+        const storyCornerBL  = document.getElementById('story-corner-bl');
+        const storyShimmer   = document.getElementById('story-shimmer');
+
+        const imgRevealTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: storyImgWrap,
+                start: 'top 75%',
+                once: true
+            }
+        });
+
+        imgRevealTl
+            // 1. Wipe the clip-path open left → right
+            .to(storyImgWrap, {
+                clipPath: 'inset(0 0% 0 0)',
+                duration: 1.2,
+                ease: 'power4.inOut'
+            })
+            // 2. Simultaneously settle the image scale
+            .to(storyImg, {
+                scale: 1,
+                duration: 1.4,
+                ease: 'power3.out'
+            }, '<0.1')
+            // 3. Gold shimmer scan across
+            .to(storyShimmer, {
+                backgroundPosition: '-200% 0',
+                duration: 1,
+                ease: 'power2.inOut'
+            }, '<0.3')
+            // 4. Corner accents fade in
+            .to([storyCornerTR, storyCornerBL], {
+                opacity: 1,
+                duration: 0.5,
+                stagger: 0.15,
+                ease: 'power2.out'
+            }, '-=0.4')
+            // 5. Caption slide up
+            .to(storyCaptionEl, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: 'power3.out'
+            }, '-=0.2');
+
+        // Story quote
+        gsap.to('.story-quote', {
+            scrollTrigger: { trigger: '.story-quote', start: 'top 70%' },
+            opacity: 1, duration: 1.2, ease: 'power3.out'
+        });
+
+        // Spec cards
+        gsap.utils.toArray('.spec-card').forEach((card, i) => {
+            gsap.to(card, {
+                scrollTrigger: { trigger: '.overview', start: 'top 60%' },
+                opacity: 1, y: 0, duration: 0.8, delay: i * 0.15, ease: 'power3.out'
+            });
+        });
+
+        // Menu Tab Functionality
+        const menuTabs = document.querySelectorAll('.menu-tab');
+        const menuContents = document.querySelectorAll('.menu-tab-content');
+
+        menuTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+
+                // Remove active from all tabs and contents
+                menuTabs.forEach(t => t.classList.remove('active'));
+                menuContents.forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab
+                tab.classList.add('active');
+
+                // Show target content
+                const targetContent = document.getElementById(targetTab);
+                targetContent.classList.add('active');
+
+                // Animate cards in target content
+                gsap.to(targetContent.querySelectorAll('.menu-card'), {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.08,
+                    duration: 0.6,
+                    ease: 'power3.out'
+                });
+            });
+        });
+
+        // Menu cards animation
+        gsap.utils.toArray('.menu-tab-content').forEach(content => {
+            gsap.from(content.querySelectorAll('.menu-card'), {
+                scrollTrigger: { trigger: '.menu', start: 'top 60%' },
+                opacity: 0,
+                y: 40,
+                stagger: 0.08,
+                duration: 0.8,
+                ease: 'power3.out'
+            });
+        });
+
+        // Initial animation for active tab
+        gsap.to('.menu-tab-content.active .menu-card', {
+            opacity: 1,
+            y: 0,
+            stagger: 0.08,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: 0.3
+        });
+
+        // Menu CTA animation
+        gsap.from('.menu-cta-btn', {
+            scrollTrigger: { trigger: '.menu-cta-wrapper', start: 'top 80%' },
+            opacity: 0,
+            y: 30,
+            duration: 1,
+            ease: 'power3.out'
+        });
+
+        // Reserve Section Animations
+        gsap.to('.reserve-label', {
+            scrollTrigger: { trigger: '.reserve', start: 'top 70%' },
+            opacity: 1, duration: 0.8, ease: 'power3.out'
+        });
+        gsap.to('.reserve-title', {
+            scrollTrigger: { trigger: '.reserve', start: 'top 65%' },
+            opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out'
+        });
+        gsap.to('.reserve-subtitle', {
+            scrollTrigger: { trigger: '.reserve', start: 'top 60%' },
+            opacity: 1, duration: 1, delay: 0.4, ease: 'power3.out'
+        });
+        gsap.to('.reserve-form-wrapper', {
+            scrollTrigger: { trigger: '.reserve', start: 'top 50%' },
+            opacity: 1, y: 0, duration: 1, delay: 0.5, ease: 'power3.out'
+        });
+        gsap.to('.reserve-info', {
+            scrollTrigger: { trigger: '.reserve', start: 'top 30%' },
+            opacity: 1, duration: 1, delay: 0.8, ease: 'power3.out'
+        });
+
+        // Animate form inputs on focus
+        document.querySelectorAll('.reserve-input, .reserve-textarea').forEach(input => {
+            input.addEventListener('focus', () => {
+                gsap.to(input, { borderColor: '#c9a962', backgroundColor: 'rgba(201, 169, 98, 0.08)', duration: 0.3 });
+            });
+            input.addEventListener('blur', () => {
+                gsap.to(input, { borderColor: 'rgba(201, 169, 98, 0.2)', backgroundColor: 'rgba(255, 255, 255, 0.03)', duration: 0.3 });
+            });
+        });
+
+        // Reservation Form Submission
+        const reservationForm = document.getElementById('reservation-form');
+        if (reservationForm) {
+            reservationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const inputs = reservationForm.querySelectorAll('.reserve-input, .reserve-textarea');
+
+                const booking = {
+                    id: 'BK' + Date.now(),
+                    name: inputs[0].value,
+                    phone: inputs[1].value,
+                    date: inputs[2].value,
+                    time: inputs[3].value,
+                    guests: inputs[4].value,
+                    occasion: inputs[5].value,
+                    specialRequests: inputs[6].value,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                let bookings = JSON.parse(localStorage.getItem('uttarayan_bookings') || '[]');
+                bookings.push(booking);
+                localStorage.setItem('uttarayan_bookings', JSON.stringify(bookings));
+
+                // Show success popup
+                const overlay = document.getElementById('success-overlay');
+                const popup = document.getElementById('success-popup');
+                if (overlay && popup) {
+                    overlay.classList.add('show');
+                    popup.classList.add('show');
+                }
+                reservationForm.reset();
+            });
+        }
+
+        // Side nav click
+        sideNavItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionIndex = parseInt(item.dataset.section);
+                const targetSection = sections[sectionIndex];
+                lenis.scrollTo(targetSection);
+            });
+        });
+
+        // Explore Menu button - scrolls to Menu section
+        document.querySelector('.hero-cta').addEventListener('click', () => {
+            lenis.scrollTo('#section-2');
+        });
+
+        // View Gallery button - scrolls to Reserve section (gallery area)
+        document.querySelector('.hero-cta-secondary').addEventListener('click', () => {
+            lenis.scrollTo('#section-3');
+        });
+
+        // ================== INQUIRE NOW — PHONE POPUP ==================
+        const inquireBtn  = document.getElementById('inquire-btn');
+        const phonePopup  = document.getElementById('phone-popup');
+
+        inquireBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            phonePopup.classList.toggle('show');
+        });
+
+        // Close when clicking anywhere outside the wrap
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.top-nav-cta-wrap')) {
+                phonePopup.classList.remove('show');
+            }
+        });
+
+        // ================== SUCCESS POPUP TOGGLE ==================
+        const successOverlayEl = document.getElementById('success-overlay');
+        const successPopupEl = document.getElementById('success-popup');
+        const successCloseBtnEl = document.getElementById('success-close-btn');
+
+        if (successCloseBtnEl && successOverlayEl) {
+            const closeSuccess = () => {
+                successOverlayEl.classList.remove('show');
+                successPopupEl.classList.remove('show');
+            };
+            successCloseBtnEl.addEventListener('click', closeSuccess);
+            successOverlayEl.addEventListener('click', closeSuccess);
+        }
+
+    </script>
+</body>
+</html>
